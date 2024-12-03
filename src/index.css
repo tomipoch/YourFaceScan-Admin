@@ -1,0 +1,83 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Sidebar específico */
+.sidebar {
+  height: 100vh; /* Ocupa toda la altura de la pantalla */
+  overflow-y: auto; /* Permite desplazamiento vertical */
+  overflow-x: hidden; /* Oculta desplazamiento horizontal */
+  transition: width 0.5s ease-in-out, background-color 0.3s ease-in-out;
+}
+
+/* Estado colapsado */
+.sidebar.collapsed {
+  width: 5.5rem; /* Ancho cuando está colapsado */
+}
+
+/* Estado expandido */
+.sidebar.expanded {
+  width: 16rem; /* Ancho cuando está expandido */
+}
+
+/* Ocultar scrollbar */
+.sidebar::-webkit-scrollbar {
+  display: none; /* Oculta scrollbar en navegadores basados en Webkit */
+}
+
+/* Botón de colapsar */
+.sidebar-collapse-button {
+  position: absolute;
+  top: 50%; /* Centra el botón verticalmente */
+  right: -14px; /* Botón fuera del borde derecho */
+  transform: translateY(-50%);
+  width: 2rem; /* Tamaño del botón */
+  height: 2rem;
+  background-color: #f0f4ff; /* Color de fondo */
+  color: #2563eb; /* Color del ícono */
+  border-radius: 50%; /* Botón circular */
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Sombra ligera */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.3s ease, background-color 0.3s ease;
+  z-index: 10; /* Coloca el botón sobre otros elementos */
+  cursor: pointer; /* Cursor interactivo */
+}
+
+/* Hover en el botón */
+.sidebar-collapse-button:hover {
+  background-color: #dbeafe;
+  transform: translateY(-50%) scale(1.1); /* Escala ligera al pasar el cursor */
+}
+
+/* Enlaces dentro del Sidebar */
+.sidebar a {
+  display: flex;
+  align-items: center;
+  padding: 0.75rem; /* Espaciado interno */
+  border-radius: 0.5rem; /* Bordes redondeados */
+  font-size: 0.875rem; /* Tamaño de fuente */
+  color: #475569; /* Color de texto inicial */
+  text-decoration: none; /* Sin subrayado */
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+/* Enlaces activos */
+.sidebar a.active {
+  background-color: #f0f4ff; /* Fondo azul claro */
+  color: #2563eb; /* Texto azul */
+}
+
+/* Hover en enlaces */
+.sidebar a:hover {
+  background-color: #f9fafb; /* Fondo más claro */
+  color: #1e293b; /* Texto más oscuro */
+}
+
+/* Iconos en los enlaces */
+.sidebar a i {
+  font-size: 1rem; /* Tamaño de los iconos */
+  margin-right: 0.75rem; /* Espaciado entre icono y texto */
+}
+
