@@ -23,17 +23,14 @@ const Sidebar: React.FC = () => {
     {
       title: "Herramientas",
       items: [
-        { to: "/admin/estadisticas", label: "Estadísticas", icon: "bar_chart" },
-        { to: "/admin/automatizacion", label: "Automatización", icon: "settings" },
-        { to: "/admin/control&de&acceso", label: "Control de Acceso", icon: "lock" },
-        { to: "/admin/alertas&notificaciones", label: "Alertas y Notificaciones", icon: "notifications" },
+        { to: "/admin/control-de-acceso", label: "Control de Acceso", icon: "lock" },
+        { to: "/admin/alertas-notificaciones", label: "Alertas y Notificaciones", icon: "notifications" },
       ],
     },
     {
       title: "Soporte",
       items: [
-        { to: "/admin/seguridad", label: "Seguridad", icon: "security" },
-        { to: "/admin/ayuda", label: "Ayuda", icon: "help_outline" },
+        { to: "/admin/seguridad", label: "Seguridad y Ayuda", icon: "security" },
       ],
     },
   ];
