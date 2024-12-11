@@ -1,21 +1,27 @@
 import React, { useState } from "react";
 import { useThemeContext } from "../../ThemeContext";
+import { changePassword } from "../../apis/consultasApi"; // Importa la función desde tu archivo de consultas
 
 const Configuracion: React.FC = () => {
   const { colors } = useThemeContext();
   const { background, text, textSecondary, background2, border } = colors;
 
-  const [currentPassword, setCurrentPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [errors, setErrors] = useState<{ [key: string]: string | null }>({});
+  const [successMessage, setSuccessMessage] = useState<string | null>(null);
 
   const validateForm = () => {
     const newErrors: { [key: string]: string | null } = {};
-    if (!currentPassword) newErrors.currentPassword = "La contraseña actual es obligatoria.";
+
     if (!newPassword || newPassword.length < 6) {
       newErrors.newPassword = "La nueva contraseña debe tener al menos 6 caracteres.";
     }
+    if (newPassword !== confirmPassword) {
+      newErrors.confirmPassword = "Las contraseñas no coinciden.";
+    }
+
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
@@ -23,28 +29,17 @@ const Configuracion: React.FC = () => {
   const handleSubmit = async () => {
     if (!validateForm()) return;
     setIsLoading(true);
-    try {
-      // Lógica para enviar datos a la API
-      console.log("Datos enviados:", { currentPassword, newPassword });
+    setSuccessMessage(null);
+    setErrors({}); // Limpiar errores previos
 
-      // Ejemplo de integración con una API
-      /*
-      const response = await fetch('/api/user/change-password', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ currentPassword, newPassword }),
-      });
-      const data = await response.json();
-      if (response.ok) {
-        console.log('Contraseña cambiada exitosamente:', data);
-      } else {
-        console.error('Error al cambiar la contraseña:', data);
-      }
-      */
+    try {
+      await changePassword(newPassword); // Llama a la función de cambio de contraseña
+      setSuccessMessage("Contraseña cambiada exitosamente.");
+      setNewPassword("");
+      setConfirmPassword("");
     } catch (error) {
-      console.error("Error al enviar los datos:", error);
+      console.error("Error al cambiar la contraseña:", error);
+      setErrors({ general: (error as Error).message });
     } finally {
       setIsLoading(false);
     }
@@ -57,18 +52,14 @@ const Configuracion: React.FC = () => {
       </h3>
       <div className="mb-6">
         <h4 className={`font-semibold mb-2 ${textSecondary}`}>Cambio de Contraseña</h4>
-        <label className={`block text-sm mb-2 ${text}`}>Contraseña Actual</label>
-        <input
-          type="password"
-          value={currentPassword}
-          onChange={(e) => setCurrentPassword(e.target.value)}
-          placeholder="Ingresa tu contraseña actual"
-          className={`w-full p-2 rounded-lg border ${border} ${background2} ${text}`}
-        />
-        {errors.currentPassword && (
-          <p className="text-red-500 text-sm">{errors.currentPassword}</p>
-        )}
-        <label className={`block text-sm mt-4 mb-2 ${text}`}>Nueva Contraseña</label>
+
+        {/* Mensaje de éxito */}
+        {successMessage && <p className="text-green-500 mb-4">{successMessage}</p>}
+
+        {/* Mensaje de error general */}
+        {errors.general && <p className="text-red-500 mb-4">{errors.general}</p>}
+
+        <label className={`block text-sm mb-2 ${text}`}>Nueva Contraseña</label>
         <input
           type="password"
           value={newPassword}
@@ -79,6 +70,21 @@ const Configuracion: React.FC = () => {
         {errors.newPassword && (
           <p className="text-red-500 text-sm">{errors.newPassword}</p>
         )}
+
+        <label className={`block text-sm mt-4 mb-2 ${text}`}>
+          Confirmar Nueva Contraseña
+        </label>
+        <input
+          type="password"
+          value={confirmPassword}
+          onChange={(e) => setConfirmPassword(e.target.value)}
+          placeholder="Confirma la nueva contraseña"
+          className={`w-full p-2 rounded-lg border ${border} ${background2} ${text}`}
+        />
+        {errors.confirmPassword && (
+          <p className="text-red-500 text-sm">{errors.confirmPassword}</p>
+        )}
+
         <button
           onClick={handleSubmit}
           disabled={isLoading}

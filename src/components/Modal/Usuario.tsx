@@ -8,7 +8,6 @@ interface EditarUsuarioModalProps {
     apellidoPaterno: string;
     apellidoMaterno: string;
     email: string;
-    estado: "Activo" | "Inactivo";
   };
   isOpen: boolean;
   onClose: () => void;
@@ -73,15 +72,6 @@ const EditarUsuarioModal: React.FC<EditarUsuarioModalProps> = ({
             onChange={handleChange}
             className={`p-2 rounded-lg border ${colors.border} ${colors.background}`}
           />
-          <select
-            name="estado"
-            value={formData.estado}
-            onChange={handleChange}
-            className={`p-2 rounded-lg border ${colors.border} ${colors.background}`}
-          >
-            <option value="Activo">Activo</option>
-            <option value="Inactivo">Inactivo</option>
-          </select>
         </div>
         <div className="flex justify-end gap-2">
           <button

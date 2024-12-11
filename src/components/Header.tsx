@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect } from "react";
 import UserMenuModal from "./UserMenuModal";
 import { useThemeContext } from "../ThemeContext"; // Ajusta la ruta según tu estructura
-import { Navigate } from "react-router-dom";
+import { getProfile } from "../apis/consultasApi"; // Importa la función para obtener el perfil
 
 const Header: React.FC = () => {
   const { colors } = useThemeContext(); // Obtiene los colores desde el contexto
@@ -9,6 +9,34 @@ const Header: React.FC = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
 
+  const [userData, setUserData] = useState({
+    nombre: "",
+    apellido: "",
+    rol: "",
+  });
+
+  const [error, setError] = useState<string | null>(null);
+
+  // Cargar datos del usuario
+  useEffect(() => {
+    const fetchUserData = async () => {
+      try {
+        const data = await getProfile(); // Llama a la API para obtener los datos del usuario
+        setUserData({
+          nombre: data.first_name || "",
+          apellido: data.last_name || "",
+          rol: data.roles?.[0]?.name || "Usuario", // Toma el primer rol disponible o un valor por defecto
+        });
+      } catch (error) {
+        console.error("Error al cargar los datos del usuario:", error);
+        setError("Error al cargar los datos del usuario.");
+      }
+    };
+
+    fetchUserData();
+  }, []);
+
+  // Manejar clic fuera del menú
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
@@ -21,6 +49,10 @@ const Header: React.FC = () => {
       document.removeEventListener("mousedown", handleClickOutside);
     };
   }, []);
+
+  if (error) {
+    return <p className={`text-center ${colors.text}`}>{error}</p>;
+  }
 
   return (
     <>
@@ -58,9 +90,13 @@ const Header: React.FC = () => {
               <i className="material-icons">person</i>
             </div>
             <div className="flex flex-col">
-              <span className="font-semibold text-sm ml-2">Rafael Morales</span>
-              <span className={`text-xs text-gray-500 dark:text-gray-400 ml-2`}>
-                Administrador
+              <span className="font-semibold text-sm ml-2">
+                {userData.nombre} {userData.apellido}
+              </span>
+              <span
+                className={`text-xs text-gray-500 dark:text-gray-400 ml-2`}
+              >
+                {userData.rol}
               </span>
             </div>
             <i className="material-icons ml-2 text-gray-500 dark:text-gray-300">
@@ -85,7 +121,6 @@ const Header: React.FC = () => {
                 <span>Configuraciones</span>
               </div>
               <div
-                onClick={() => Navigate}
                 className={`flex items-center gap-2 ${colors.text} hover:text-blue-500 hover:bg-gray-100 dark:hover:bg-gray-600 text-sm py-2 px-4 cursor-pointer`}
               >
                 <i className="material-icons text-base">logout</i>
@@ -97,7 +132,10 @@ const Header: React.FC = () => {
       </header>
 
       {/* Modal de configuraciones del usuario */}
-      <UserMenuModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />
+      <UserMenuModal
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+      />
     </>
   );
 };
