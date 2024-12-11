@@ -14,11 +14,11 @@ const Seguridad = lazy(() => import("./views/Soporte/Seguridad"));
 
 
 const adminRoutes = [
-  { path: "usuarios", element: <Usuarios /> },
-  { path: "antecedentes", element: <Antecedentes /> },
-  { path: "historial", element: <HistorialDeConsultas /> },
-  { path: "control-de-acceso", element: <ControlDeAcceso /> },
-  { path: "seguridad", element: <Seguridad /> },
+  { path: "/admin/usuarios", element: <Usuarios /> },
+  { path: "/admin/antecedentes", element: <Antecedentes /> },
+  { path: "/admin/historial", element: <HistorialDeConsultas /> },
+  { path: "/admin/control-de-acceso", element: <ControlDeAcceso /> },
+  { path: "/admin/seguridad", element: <Seguridad /> },
 ];
 
 const AppRouter = () => {
