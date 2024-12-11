@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { useThemeContext } from "../../ThemeContext"; // Ajusta la ruta según tu estructura
 
 interface EditarUsuarioModalProps {
   usuario: {
@@ -20,6 +21,7 @@ const EditarUsuarioModal: React.FC<EditarUsuarioModalProps> = ({
   onClose,
   onSave,
 }) => {
+  const { colors } = useThemeContext(); // Obtenemos los colores del contexto
   const [formData, setFormData] = useState({ ...usuario });
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
@@ -35,8 +37,8 @@ const EditarUsuarioModal: React.FC<EditarUsuarioModalProps> = ({
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
-      <div className="bg-white p-6 rounded-lg shadow-lg w-96">
+    <div className={`fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50`}>
+      <div className={`p-6 rounded-lg shadow-lg w-96 ${colors.background2} ${colors.text}`}>
         <h3 className="text-xl font-bold mb-4">Editar Usuario</h3>
         <div className="grid gap-4 mb-4">
           <input
@@ -45,7 +47,7 @@ const EditarUsuarioModal: React.FC<EditarUsuarioModalProps> = ({
             placeholder="Nombre"
             value={formData.nombre}
             onChange={handleChange}
-            className="p-2 rounded-lg border"
+            className={`p-2 rounded-lg border ${colors.border} ${colors.background}`}
           />
           <input
             type="text"
@@ -53,7 +55,7 @@ const EditarUsuarioModal: React.FC<EditarUsuarioModalProps> = ({
             placeholder="Apellido Paterno"
             value={formData.apellidoPaterno}
             onChange={handleChange}
-            className="p-2 rounded-lg border"
+            className={`p-2 rounded-lg border ${colors.border} ${colors.background}`}
           />
           <input
             type="text"
@@ -61,7 +63,7 @@ const EditarUsuarioModal: React.FC<EditarUsuarioModalProps> = ({
             placeholder="Apellido Materno"
             value={formData.apellidoMaterno}
             onChange={handleChange}
-            className="p-2 rounded-lg border"
+            className={`p-2 rounded-lg border ${colors.border} ${colors.background}`}
           />
           <input
             type="email"
@@ -69,23 +71,29 @@ const EditarUsuarioModal: React.FC<EditarUsuarioModalProps> = ({
             placeholder="Correo Electrónico"
             value={formData.email}
             onChange={handleChange}
-            className="p-2 rounded-lg border"
+            className={`p-2 rounded-lg border ${colors.border} ${colors.background}`}
           />
           <select
             name="estado"
             value={formData.estado}
             onChange={handleChange}
-            className="p-2 rounded-lg border"
+            className={`p-2 rounded-lg border ${colors.border} ${colors.background}`}
           >
             <option value="Activo">Activo</option>
             <option value="Inactivo">Inactivo</option>
           </select>
         </div>
         <div className="flex justify-end gap-2">
-          <button onClick={onClose} className="px-4 py-2 bg-gray-300 rounded-lg">
+          <button
+            onClick={onClose}
+            className={`px-4 py-2 rounded-lg ${colors.border} ${colors.hoverBackground} ${colors.text}`}
+          >
             Cancelar
           </button>
-          <button onClick={handleSave} className="px-4 py-2 bg-blue-500 text-white rounded-lg">
+          <button
+            onClick={handleSave}
+            className={`px-4 py-2 rounded-lg bg-blue-500 text-white hover:bg-blue-700`}
+          >
             Guardar
           </button>
         </div>
