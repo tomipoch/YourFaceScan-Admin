@@ -24,7 +24,6 @@ const Sidebar: React.FC = () => {
       title: "Herramientas",
       items: [
         { to: "/admin/control-de-acceso", label: "Control de Acceso", icon: "lock" },
-        { to: "/admin/alertas-notificaciones", label: "Alertas y Notificaciones", icon: "notifications" },
       ],
     },
     {

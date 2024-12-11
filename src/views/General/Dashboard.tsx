@@ -8,11 +8,6 @@ ChartJS.register(...registerables);
 const Dashboard: React.FC = () => {
   const { colors } = useThemeContext(); // Obtiene los colores del contexto
 
-  const alertasRecientes = [
-    { id: 1, mensaje: "5 intentos fallidos de acceso desde la IP 192.168.1.10", fecha: "2023-11-20" },
-    { id: 2, mensaje: "Acceso no autorizado desde ubicación desconocida", fecha: "2023-11-19" },
-  ];
-
   const actividadReciente = [
     { id: 1, fecha: "2023-11-20", usuario: "Rafael Morales", accion: "Consulta realizada para Pedro López" },
     { id: 2, fecha: "2023-11-20", usuario: "Ana García", accion: "Cambio en configuración de seguridad" },
@@ -115,20 +110,6 @@ const Dashboard: React.FC = () => {
             />
           </div>
         </div>
-      </div>
-
-      {/* Alertas Recientes */}
-      <div className="mb-6">
-        <h4 className="text-lg font-semibold mb-4">Alertas Recientes</h4>
-        <ul className="space-y-4">
-          {alertasRecientes.map((alerta) => (
-            <li key={alerta.id} className={`p-4 rounded-2xl border ${colors.border} ${colors.background2}`}>
-              <p className="text-sm">
-                <strong>{alerta.fecha}</strong>: {alerta.mensaje}
-              </p>
-            </li>
-          ))}
-        </ul>
       </div>
 
       {/* Actividad Reciente */}

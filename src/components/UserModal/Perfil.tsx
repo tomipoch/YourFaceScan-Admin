@@ -2,21 +2,15 @@ import React, { useState } from "react";
 import { useThemeContext } from "../../ThemeContext";
 
 const PerfilSeccion: React.FC = () => {
-  const [profileImage, setProfileImage] = useState<string | null>("/path/to/default-profile.jpg");
-  const [formData, setFormData] = useState({
-    fullName: "Tomas Poblete Chamorro",
-    email: "ft.fernandotomas@gmail.com",
-    phone: "+56912345678",
-  });
   const { colors } = useThemeContext();
   const { background, text, textSecondary, background2, border } = colors;
 
-  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files && e.target.files[0]) {
-      const file = e.target.files[0];
-      setProfileImage(URL.createObjectURL(file));
-    }
-  };
+  const [formData, setFormData] = useState({
+    nombre: "Tomas",
+    apellidoPaterno: "Poblete",
+    apellidoMaterno: "Chamorro",
+    correo: "ft.fernandotomas@gmail.com",
+  });
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -25,25 +19,8 @@ const PerfilSeccion: React.FC = () => {
 
   const handleSubmit = async () => {
     try {
-      // Lógica para enviar los datos a la API
-      console.log("Datos enviados:", { profileImage, ...formData });
-
-      // Ejemplo de integración con una API
-      /*
-      const response = await fetch('/api/user/update-profile', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ profileImage, ...formData }),
-      });
-      const data = await response.json();
-      if (response.ok) {
-        console.log('Perfil actualizado:', data);
-      } else {
-        console.error('Error al actualizar el perfil:', data);
-      }
-      */
+      console.log("Datos enviados:", { ...formData });
+      // Aquí iría la lógica para enviar los datos a una API
     } catch (error) {
       console.error("Error al enviar los datos:", error);
     }
@@ -59,73 +36,61 @@ const PerfilSeccion: React.FC = () => {
       <h3 className={`text-lg font-semibold mb-4 ${textSecondary}`}>
         Mi perfil
       </h3>
+      {/* Icono de perfil */}
       <div className="flex items-center mb-6">
-        <div className={`w-16 h-16 rounded-full overflow-hidden relative ${background2}`}>
-          <img
-            src={profileImage}
-            alt="Foto de perfil"
-            className="w-full h-full object-cover"
-          />
-          <label
-            className={`absolute bottom-0 right-0 bg-blue-500 text-white p-1 rounded-full cursor-pointer`}
-          >
-            <i className="material-icons text-sm">edit</i>
-            <input
-              type="file"
-              accept="image/*"
-              className="hidden"
-              onChange={handleImageUpload}
-            />
-          </label>
-        </div>
-        <div className="ml-4 flex-grow">
-          <label className={`text-sm block mb-1 ${text}`}>
-            Nombre completo
-          </label>
-          <input
-            type="text"
-            name="fullName"
-            value={formData.fullName}
-            onChange={handleInputChange}
-            className={getInputClass()}
-          />
+        <div
+          className={`w-16 h-16 rounded-full flex items-center justify-center border ${border}`}
+          style={{ backgroundColor: background2 }}
+        >
+          <i className="material-icons text-4xl" style={{ color: text }}>
+            person
+          </i>
         </div>
       </div>
+
+      {/* Formulario de perfil */}
       <div className="mb-6">
-        <label className={`block text-sm mb-2 ${text}`}>
-          Correo electrónico
-        </label>
-        <input
-          type="email"
-          name="email"
-          value={formData.email}
-          onChange={handleInputChange}
-          className={getInputClass()}
-        />
-      </div>
-      <div className="mb-6">
-        <label className={`block text-sm mb-2 ${text}`}>
-          Número de contacto
-        </label>
-        <input
-          type="tel"
-          name="phone"
-          value={formData.phone}
-          onChange={handleInputChange}
-          className={getInputClass()}
-        />
-      </div>
-      <div className="mb-6">
-        <label className={`block text-sm mb-2 ${text}`}>
-          Rol Actual
-        </label>
+        <label className={`block text-sm mb-2 ${text}`}>Nombre</label>
         <input
           type="text"
-          value="Administrador"
-          disabled
-          className={getInputClass(true)}
+          name="nombre"
+          value={formData.nombre}
+          onChange={handleInputChange}
+          className={getInputClass()}
         />
       </div>
+      <div className="mb-6">
+        <label className={`block text-sm mb-2 ${text}`}>Apellido Paterno</label>
+        <input
+          type="text"
+          name="apellidoPaterno"
+          value={formData.apellidoPaterno}
+          onChange={handleInputChange}
+          className={getInputClass()}
+        />
+      </div>
+      <div className="mb-6">
+        <label className={`block text-sm mb-2 ${text}`}>Apellido Materno</label>
+        <input
+          type="text"
+          name="apellidoMaterno"
+          value={formData.apellidoMaterno}
+          onChange={handleInputChange}
+          className={getInputClass()}
+        />
+      </div>
+      <div className="mb-6">
+        <label className={`block text-sm mb-2 ${text}`}>Correo Electrónico</label>
+        <input
+          type="email"
+          name="correo"
+          value={formData.correo}
+          onChange={handleInputChange}
+          className={getInputClass()}
+        />
+      </div>
+
+      {/* Botón de guardar */}
       <button
         onClick={handleSubmit}
         className="w-full py-2 bg-blue-500 text-white rounded-lg font-bold hover:bg-blue-600"
