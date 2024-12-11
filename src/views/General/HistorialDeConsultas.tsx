@@ -1,7 +1,8 @@
 import React, { useState } from "react";
 import { saveAs } from "file-saver";
 import * as XLSX from "xlsx";
-import { useThemeContext } from "../../ThemeContext"; // Ajusta la ruta según tu estructura
+import { useThemeContext } from "../../ThemeContext";
+import HistorialConsultaModal from "../../components/Modal/Historial";
 
 interface Consulta {
   id: number;
@@ -16,7 +17,7 @@ interface Consulta {
 }
 
 const HistorialDeConsultas: React.FC = () => {
-  const { colors } = useThemeContext(); // Uso del ThemeContext
+  const { colors } = useThemeContext();
 
   const consultas: Consulta[] = [
     {
@@ -51,6 +52,20 @@ const HistorialDeConsultas: React.FC = () => {
     resultado: "",
   });
 
+  const [modalDetalles, setModalDetalles] = useState({
+    isOpen: false,
+    detalles: {
+      foto: "",
+      nombre: "",
+      apellidoPaterno: "",
+      apellidoMaterno: "",
+      identificacion: "",
+      fechaNacimiento: "",
+      genero: "",
+      antecedentes: [] as string[],
+    },
+  });
+
   const consultasFiltradas = consultas.filter(
     (consulta) =>
       consulta.usuario.toLowerCase().includes(filtros.usuario.toLowerCase()) &&
@@ -63,6 +78,26 @@ const HistorialDeConsultas: React.FC = () => {
       (!filtros.rangoFechaFin ||
         new Date(consulta.fecha) <= new Date(filtros.rangoFechaFin))
   );
+
+  const handleAbrirModal = (consulta: Consulta) => {
+    setModalDetalles({
+      isOpen: true,
+      detalles: {
+        foto: consulta.foto,
+        nombre: consulta.personaConsultada.split(" ")[0],
+        apellidoPaterno: consulta.personaConsultada.split(" ")[1] || "",
+        apellidoMaterno: consulta.personaConsultada.split(" ")[2] || "",
+        identificacion: `ID-${consulta.id}`,
+        fechaNacimiento: "1990-01-01", // Simulado para este ejemplo
+        genero: "Masculino", // Simulado para este ejemplo
+        antecedentes: consulta.antecedentes,
+      },
+    });
+  };
+
+  const handleCerrarModal = () => {
+    setModalDetalles({ ...modalDetalles, isOpen: false });
+  };
 
   const handleExportarExcel = () => {
     const dataParaExportar = consultasFiltradas.map((consulta) => ({
@@ -172,7 +207,7 @@ const HistorialDeConsultas: React.FC = () => {
                 <td className={`border ${colors.border} p-2`}>{consulta.resultado}</td>
                 <td className={`border ${colors.border} p-2`}>
                   <button
-                    onClick={() => console.log("Ver detalles")}
+                    onClick={() => handleAbrirModal(consulta)}
                     className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600"
                   >
                     Ver Detalles
@@ -193,6 +228,13 @@ const HistorialDeConsultas: React.FC = () => {
           Exportar a Excel
         </button>
       </div>
+
+      {/* Modal Detalles */}
+      <HistorialConsultaModal
+        isOpen={modalDetalles.isOpen}
+        onClose={handleCerrarModal}
+        detalles={modalDetalles.detalles}
+      />
     </div>
   );
 };

@@ -1,5 +1,6 @@
 import React, { useState } from "react";
-import { useThemeContext } from "../../ThemeContext"; // Ajusta la ruta según tu estructura
+import { useThemeContext } from "../../ThemeContext";
+import EliminarUsuarioModal from "../../components/Modal/Eliminar"; // Usamos el modal de eliminación aquí
 
 interface Antecedente {
   id: number;
@@ -12,7 +13,7 @@ interface Antecedente {
 }
 
 const Antecedentes: React.FC = () => {
-  const { colors } = useThemeContext(); // Obtiene los colores del contexto
+  const { colors } = useThemeContext();
 
   const [antecedentes, setAntecedentes] = useState<Antecedente[]>([
     {
@@ -60,6 +61,9 @@ const Antecedentes: React.FC = () => {
     fechaCreacion: "",
   });
 
+  const [antecedenteEliminando, setAntecedenteEliminando] = useState<Antecedente | null>(null);
+  const [isEliminarModalOpen, setEliminarModalOpen] = useState(false);
+
   const handleFiltroChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
     setFiltros({ ...filtros, [name]: value });
@@ -95,8 +99,16 @@ const Antecedentes: React.FC = () => {
     });
   };
 
-  const handleEliminarAntecedente = (id: number) => {
-    setAntecedentes(antecedentes.filter((antecedente) => antecedente.id !== id));
+  const handleEliminarAntecedente = (antecedente: Antecedente) => {
+    setAntecedenteEliminando(antecedente);
+    setEliminarModalOpen(true);
+  };
+
+  const confirmEliminarAntecedente = () => {
+    if (antecedenteEliminando) {
+      setAntecedentes(antecedentes.filter((a) => a.id !== antecedenteEliminando.id));
+    }
+    setEliminarModalOpen(false);
   };
 
   const antecedentesFiltrados = antecedentes.filter(
@@ -177,7 +189,7 @@ const Antecedentes: React.FC = () => {
                 <td className={`border ${colors.border} p-2 flex gap-2`}>
                   <button
                     className="px-3 py-1 bg-red-500 text-white rounded-lg hover:bg-red-600"
-                    onClick={() => handleEliminarAntecedente(antecedente.id)}
+                    onClick={() => handleEliminarAntecedente(antecedente)}
                   >
                     Eliminar
                   </button>
@@ -242,6 +254,14 @@ const Antecedentes: React.FC = () => {
           Crear Antecedente
         </button>
       </div>
+
+      {/* Modal de Eliminación */}
+      <EliminarUsuarioModal
+        isOpen={isEliminarModalOpen}
+        usuarioNombre={antecedenteEliminando?.nombre || ""}
+        onClose={() => setEliminarModalOpen(false)}
+        onConfirm={confirmEliminarAntecedente}
+      />
     </div>
   );
 };
