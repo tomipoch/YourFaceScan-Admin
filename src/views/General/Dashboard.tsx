@@ -1,46 +1,71 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Bar, Pie } from "react-chartjs-2";
 import { Chart as ChartJS, registerables } from "chart.js";
 import { useThemeContext } from "../../ThemeContext"; // Ajusta la ruta según tu estructura
+import { getRecognitions } from "../../apis/consultasApi"; 
 
 ChartJS.register(...registerables);
 
 const Dashboard: React.FC = () => {
   const { colors } = useThemeContext(); // Obtiene los colores del contexto
+  const [consultasPorDia, setConsultasPorDia] = useState<number[]>([]);
+  const [diasSemana, setDiasSemana] = useState<string[]>([]);
+  const [labelsAntecedentes, setLabelsAntecedentes] = useState<string[]>([]);
+  const [tiposAntecedentes, setTiposAntecedentes] = useState<number[]>([]);
+  const [activeUsers, setActiveUsers] = useState<number>(0);
+  const [totalRecognitions, setTotalRecognitions] = useState<number>(0);
+  const [totalAwards, setTotalAwards] = useState<number>(0);
 
-  const actividadReciente = [
-    { id: 1, fecha: "2023-11-20", usuario: "Rafael Morales", accion: "Consulta realizada para Pedro López" },
-    { id: 2, fecha: "2023-11-20", usuario: "Ana García", accion: "Cambio en configuración de seguridad" },
-    { id: 3, fecha: "2023-11-19", usuario: "Rafael Morales", accion: "Nueva alerta creada" },
-  ];
+  useEffect(() => {
+    const fetchRecognitions = async () => {
+      try {
+        const data = await getRecognitions(); // Llama a la función de la API
+        const last7Days = data.last_7_days_recognitions;
+        const recordsTypes = data.records_types;
 
-  const totalConsultas = 350;
-  const usuariosActivos = 25;
-  const porcentajeCoincidencias = 78;
+        // Actualizar métricas clave
+        setActiveUsers(data.active_users_count);
+        setTotalRecognitions(data.recognitions_count);
+        setTotalAwards(data.recognitions_awards_count);
 
-  const consultasPorDia = [50, 75, 100, 120, 90, 110, 80];
-  const diasSemana = ["Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado", "Domingo"];
+        // Procesa los datos para el gráfico de barras
+        const counts = last7Days.map((item: any) => item.recognitions_count);
+        const days = last7Days.map((item: any) => item.day);
 
-  const tiposAntecedentes = [40, 30, 20, 10];
-  const labelsAntecedentes = ["Penal", "Laboral", "Académico", "Otro"];
+        setConsultasPorDia(counts);
+        setDiasSemana(days);
+
+        // Procesa los datos para el gráfico de torta
+        const labels = recordsTypes.map((record: any) => record.name);
+        const dataCounts = recordsTypes.map((record: any) => record.record_count);
+
+        setLabelsAntecedentes(labels);
+        setTiposAntecedentes(dataCounts);
+      } catch (error) {
+        console.error("Error al obtener los datos de reconocimientos:", error);
+      }
+    };
+
+    fetchRecognitions();
+  }, []);
 
   return (
     <div className={`p-6 ${colors.background} ${colors.text}`}>
       <h3 className="text-2xl font-bold mb-6">Dashboard</h3>
 
-      {/* Métricas Clave */}
+      {/* Contenedores de métricas clave */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
         <div className={`p-4 rounded-2xl border ${colors.border} ${colors.background2}`}>
-          <h4 className="text-sm font-semibold mb-2">Total de Consultas</h4>
-          <p className="text-3xl font-bold">{totalConsultas}</p>
-        </div>
-        <div className={`p-4 rounded-2xl border ${colors.border} ${colors.background2}`}>
           <h4 className="text-sm font-semibold mb-2">Usuarios Activos</h4>
-          <p className="text-3xl font-bold">{usuariosActivos}</p>
+          <p className="text-3xl font-bold">{activeUsers}</p>
         </div>
         <div className={`p-4 rounded-2xl border ${colors.border} ${colors.background2}`}>
-          <h4 className="text-sm font-semibold mb-2">% Coincidencias Recientes</h4>
-          <p className="text-3xl font-bold">{porcentajeCoincidencias}%</p>
+          <h4 className="text-sm font-semibold mb-2">Total Reconocimientos</h4>
+          <p className="text-3xl font-bold">{totalRecognitions}</p>
+        </div>
+        <div className={`p-4 rounded-2xl border ${colors.border} ${colors.background2}`}>
+          <h4 className="text-sm font-semibold mb-2">Total Premios</h4>
+          <p className="text-3xl font-bold">{totalAwards}</p>
         </div>
       </div>
 
@@ -69,11 +94,13 @@ const Dashboard: React.FC = () => {
                 },
                 scales: {
                   y: {
-                    display: false, // Oculta el eje Y
+                    grid: {
+                      display: true, // Mostrar cuadrícula en eje Y
+                    },
                   },
                   x: {
                     grid: {
-                      display: false, // Oculta la cuadrícula
+                      display: false, // Ocultar cuadrícula en eje X
                     },
                   },
                 },
@@ -98,6 +125,17 @@ const Dashboard: React.FC = () => {
                       "rgba(54, 162, 235, 0.7)",
                       "rgba(255, 206, 86, 0.7)",
                       "rgba(75, 192, 192, 0.7)",
+                      "rgba(153, 102, 255, 0.7)",
+                      "rgba(255, 159, 64, 0.7)",
+                      "rgba(199, 199, 199, 0.7)",
+                      "rgba(83, 102, 255, 0.7)",
+                      "rgba(99, 83, 255, 0.7)",
+                      "rgba(163, 255, 102, 0.7)",
+                      "rgba(64, 162, 192, 0.7)",
+                      "rgba(235, 112, 192, 0.7)",
+                      "rgba(102, 153, 255, 0.7)",
+                      "rgba(192, 102, 75, 0.7)",
+                      "rgba(255, 64, 99, 0.7)",
                     ],
                   },
                 ],
@@ -109,31 +147,6 @@ const Dashboard: React.FC = () => {
               }}
             />
           </div>
-        </div>
-      </div>
-
-      {/* Actividad Reciente */}
-      <div>
-        <h4 className="text-lg font-semibold mb-4">Actividad Reciente</h4>
-        <div className={`overflow-x-auto rounded-2xl border ${colors.border}`}>
-          <table className="w-full text-sm border-collapse">
-            <thead>
-              <tr className={`${colors.background2}`}>
-                <th className={`border ${colors.border} p-2`}>Fecha</th>
-                <th className={`border ${colors.border} p-2`}>Usuario</th>
-                <th className={`border ${colors.border} p-2`}>Acción</th>
-              </tr>
-            </thead>
-            <tbody>
-              {actividadReciente.map((actividad) => (
-                <tr key={actividad.id}>
-                  <td className={`border ${colors.border} p-2`}>{actividad.fecha}</td>
-                  <td className={`border ${colors.border} p-2`}>{actividad.usuario}</td>
-                  <td className={`border ${colors.border} p-2`}>{actividad.accion}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
         </div>
       </div>
     </div>

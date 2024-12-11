@@ -1,29 +1,45 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { getLogin } from "../apis/consultasApi";
 
 const Login = () => {
   const [user, setUser] = useState({
-    email: '',
-    password: ''
+    email: "",
+    password: "",
   });
-
+  const [error, setError] = useState("");
   const navigate = useNavigate();
 
   const handleForm = (e: React.ChangeEvent<HTMLInputElement>) => {
     setUser({
       ...user,
-      [e.target.name]: e.target.value
+      [e.target.name]: e.target.value,
     });
   };
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    if (Object.values(user).includes('')) {
-      console.log('Todos los campos son obligatorios');
+
+    if (Object.values(user).includes("")) {
+      setError("Todos los campos son obligatorios");
       return;
     }
 
-    navigate('/admin', { replace: true });
+    try {
+      // Llama a la función getLogin con el email y la contraseña
+      const response = await getLogin(user.email, user.password);
+
+      // Valida si la respuesta incluye un token o indica éxito
+      if (response?.access) {
+        console.log("Autenticación exitosa:", response);
+        navigate("/admin", { replace: true });
+      } else {
+        setError("Credenciales inválidas, inténtalo de nuevo");
+      }
+    } catch (err) {
+      console.error("Error al autenticar:", err);
+      setError("Credenciales Incorrectas");
+    }
   };
 
   return (
@@ -46,6 +62,10 @@ const Login = () => {
         <p className="text-gray-700 mb-4">
           Conéctate para acceder a todo lo que necesitas en un solo lugar.
         </p>
+        {/* Muestra error si existe */}
+        {error && (
+          <p className="text-red-500 text-sm mb-4">{error}</p>
+        )}
         {/* Formulario */}
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
@@ -71,7 +91,10 @@ const Login = () => {
             />
           </div>
           <div className="text-center">
-            <a href="#" className="text-sm text-blue-700 font-semibold hover:underline">
+            <a
+              href="#"
+              className="text-sm text-blue-700 font-semibold hover:underline"
+            >
               ¿Olvidaste la contraseña?
             </a>
           </div>
