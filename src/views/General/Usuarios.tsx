@@ -1,6 +1,7 @@
 import React, { useState } from "react";
-import { saveAs } from "file-saver";
 import { useThemeContext } from "../../ThemeContext";
+import EditarUsuarioModal from "../../components/Modal/Usuario";
+import EliminarUsuarioModal from "../../components/Modal/Eliminar";
 
 interface Usuario {
   id: number;
@@ -60,6 +61,12 @@ const Usuarios: React.FC = () => {
     ultimaActividad: "N/A",
   });
 
+  const [usuarioEditando, setUsuarioEditando] = useState<Usuario | null>(null);
+  const [usuarioEliminando, setUsuarioEliminando] = useState<Usuario | null>(null);
+
+  const [isEditarModalOpen, setEditarModalOpen] = useState(false);
+  const [isEliminarModalOpen, setEliminarModalOpen] = useState(false);
+
   const handleFiltroChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
     setFiltros({ ...filtros, [name]: value });
@@ -99,8 +106,21 @@ const Usuarios: React.FC = () => {
     });
   };
 
-  const handleEliminarUsuario = (id: number) => {
-    setUsuarios(usuarios.filter((usuario) => usuario.id !== id));
+  const handleEditarUsuario = (usuario: Usuario) => {
+    setUsuarioEditando(usuario);
+    setEditarModalOpen(true);
+  };
+
+  const handleEliminarUsuario = (usuario: Usuario) => {
+    setUsuarioEliminando(usuario);
+    setEliminarModalOpen(true);
+  };
+
+  const handleEliminarUsuarioConfirm = () => {
+    if (usuarioEliminando) {
+      setUsuarios(usuarios.filter((usuario) => usuario.id !== usuarioEliminando.id));
+    }
+    setEliminarModalOpen(false);
   };
 
   const usuariosFiltrados = usuarios.filter(
@@ -161,13 +181,13 @@ const Usuarios: React.FC = () => {
                 <td className={`border ${border} p-2 flex gap-2`}>
                   <button
                     className="px-3 py-1 bg-blue-500 text-white rounded-lg hover:bg-blue-600"
-                    onClick={() => alert("Función de edición no implementada")}
+                    onClick={() => handleEditarUsuario(usuario)}
                   >
                     Editar
                   </button>
                   <button
                     className="px-3 py-1 bg-red-500 text-white rounded-lg hover:bg-red-600"
-                    onClick={() => handleEliminarUsuario(usuario.id)}
+                    onClick={() => handleEliminarUsuario(usuario)}
                   >
                     Eliminar
                   </button>
@@ -222,6 +242,27 @@ const Usuarios: React.FC = () => {
           Crear Usuario
         </button>
       </div>
+
+      {/* Modales */}
+      <EditarUsuarioModal
+        usuario={usuarioEditando!}
+        isOpen={isEditarModalOpen}
+        onClose={() => setEditarModalOpen(false)}
+        onSave={(updatedUsuario) => {
+          setUsuarios((prevUsuarios) =>
+            prevUsuarios.map((usuario) =>
+              usuario.id === updatedUsuario.id ? updatedUsuario : usuario
+            )
+          );
+        }}
+      />
+
+      <EliminarUsuarioModal
+        isOpen={isEliminarModalOpen}
+        usuarioNombre={usuarioEliminando?.nombre || ""}
+        onClose={() => setEliminarModalOpen(false)}
+        onConfirm={handleEliminarUsuarioConfirm}
+      />
     </div>
   );
 };
