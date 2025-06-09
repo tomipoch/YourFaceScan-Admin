@@ -1,10 +1,11 @@
 import React, { useState, useRef, useEffect } from "react";
 import UserMenuModal from "./UserMenuModal";
 import { useThemeContext } from "../ThemeContext"; // Ajusta la ruta según tu estructura
-import { Navigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 const Header: React.FC = () => {
   const { colors } = useThemeContext(); // Obtiene los colores desde el contexto
+  const navigate = useNavigate();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
@@ -85,7 +86,10 @@ const Header: React.FC = () => {
                 <span>Configuraciones</span>
               </div>
               <div
-                onClick={() => Navigate}
+                onClick={() => {
+                  localStorage.removeItem('access');
+                  navigate('/');
+                }}
                 className={`flex items-center gap-2 ${colors.text} hover:text-blue-500 hover:bg-gray-100 dark:hover:bg-gray-600 text-sm py-2 px-4 cursor-pointer`}
               >
                 <i className="material-icons text-base">logout</i>
